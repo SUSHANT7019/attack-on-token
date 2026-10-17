@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-animation-intensity="unhinged">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account & Profile — RageBait Lab</title>
+  <meta name="description" content="Manage your RageBait Lab credentials, customize your chaos personality, inspect unlocked achievements, and review real-time laboratory telemetry.">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/account.css">
+</head>
+<body>
+
+  <!-- Top Sticky Navigation Bar -->
+  <header class="navbar" role="banner">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand" style="text-decoration: none;">
+        <span class="nav-brand-icon" aria-hidden="true">🌀</span>
+        <span class="nav-brand-text">RageBait Lab</span>
+      </a>
+
+      <!-- Quick Actions -->
+      <div class="nav-actions">
+        <a href="index.html" class="btn btn-sm btn-secondary">
+          ⬅️ Return to Main Lab
+        </a>
+        <button class="btn btn-sm btn-icon" id="nav-theme-toggle" aria-label="Toggle dark/light theme" title="Toggle theme">
+          🌓
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="account-page-wrapper" id="main-content">
+    
+    <!-- Demo Mode Notice Banner -->
+    <div class="demo-banner" role="region" aria-label="Demo mode announcement">
+      <div class="demo-banner-content">
+        <span class="demo-banner-badge">DEMO MODE ACTIVE</span>
+        <span class="demo-banner-text">
+          Running in offline-first client mode. Passwords are cryptographically salted &amp; hashed via Web Crypto SHA-256 (never stored plaintext).
+        </span>
+      </div>
+      <button class="btn btn-sm btn-secondary" id="fill-demo-creds-btn">
+        ⚡ Fill Demo Credentials
+      </button>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- VIEW 1: AUTHENTICATION (LOGGED-OUT STATE)      -->
+    <!-- ============================================== -->
+    <div id="account-auth-view" class="auth-container-card">
+      
+      <!-- Reactive Mascot Head -->
+      <div class="auth-mascot-head" aria-live="polite">
+        <div class="auth-mascot-avatar" id="auth-mascot-avatar" aria-hidden="true">😈</div>
+        <div class="auth-mascot-speech" id="auth-mascot-speech">"Welcome to the portal. Choose your destiny!"</div>
+      </div>
+
+      <!-- Navigation Tabs: Login / Signup / Recovery -->
+      <div class="auth-tabs-row" role="tablist">
+        <button class="auth-tab-btn is-active" id="tab-login-btn" role="tab" aria-selected="true" aria-controls="auth-login-panel">
+          Login
+        </button>
+        <button class="auth-tab-btn" id="tab-signup-btn" role="tab" aria-selected="false" aria-controls="auth-signup-panel">
+          Multi-Step Signup
+        </button>
+        <button class="auth-tab-btn" id="tab-recover-btn" role="tab" aria-selected="false" aria-controls="auth-recover-panel">
+          Reset Password
+        </button>
+      </div>
+
+      <!-- Alert Box for Errors & Success -->
+      <div id="auth-alert-box" class="auth-alert-box hidden" role="alert"></div>
+
+      <!-- TAB PANEL 1: LOGIN FORM -->
+      <div id="auth-login-panel" role="tabpanel" aria-labelledby="tab-login-btn">
+        <form id="login-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="login-email">Email Address</label>
+            <div class="form-input-wrap">
+              <input type="email" id="login-email" class="form-input" placeholder="e.g. troll@ragebait.lab" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="login-password">Password</label>
+            <div class="form-input-wrap">
+              <input type="password" id="login-password" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
+              <button type="button" class="password-toggle-btn" id="login-pw-toggle" aria-label="Toggle password visibility">👁️</button>
+            </div>
+          </div>
+
+          <div class="form-checkbox-row">
+            <label class="checkbox-label">
+              <input type="checkbox" id="login-remember-me" checked>
+              <span>Remember session</span>
+            </label>
+            <a href="#" id="forgot-password-link" style="font-size: 0.85rem;">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="login-submit-btn" style="width: 100%;">
+            <span id="login-btn-spinner" class="hidden">🌀</span>
+            <span id="login-btn-text">Log In To Laboratory</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- TAB PANEL 2: MULTI-STEP SIGNUP WIZARD -->
+      <div id="auth-signup-panel" class="hidden" role="tabpanel" aria-labelledby="tab-signup-btn">
+        
+        <!-- Step Indicators -->
+        <div class="wizard-steps-indicator" aria-label="Signup Progress">
+          <div class="wizard-step-node is-active" id="node-step-1">
+            <div class="wizard-step-circle">1</div>
+            <span class="wizard-step-label">Account</span>
+          </div>
+          <div class="wizard-step-node" id="node-step-2">
+            <div class="wizard-step-circle">2</div>
+            <span class="wizard-step-label">Personality</span>
+          </div>
+          <div class="wizard-step-node" id="node-step-3">
+            <div class="wizard-step-circle">3</div>
+            <span class="wizard-step-label">Preferences</span>
+          </div>
+          <div class="wizard-step-node" id="node-step-4">
+            <div class="wizard-step-circle">4</div>
+            <span class="wizard-step-label">Confirm</span>
+          </div>
+        </div>
+
+        <form id="signup-multi-form" novalidate>
+          
+          <!-- STEP 1: Account Details -->
+          <div class="signup-step-container" id="signup-step-1">
+            <div class="form-group">
+              <label class="form-label" for="signup-name">Display Name</label>
+              <input type="text" id="signup-name" class="form-input" placeholder="e.g. Chaos Connoisseur" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="signup-email">Email Address</label>
+              <input type="email" id="signup-email" class="form-input" placeholder="e.g. recruit@ragebait.lab" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="signup-password">Password</label>
+              <div class="form-input-wrap">
+                <input type="password" id="signup-password" class="form-input" placeholder="Min 8 chars, 1 number, 1 symbol" required>
+                <button type="button" class="password-toggle-btn" id="signup-pw-toggle" aria-label="Toggle password visibility">👁️</button>
+              </div>
+              <div class="password-strength-container">
+                <div class="password-strength-track">
+                  <div class="password-strength-fill" id="signup-pw-strength-bar"></div>
+                </div>
+                <div class="password-strength-text" id="signup-pw-strength-text">Password strength: Waiting for input</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="signup-confirm-password">Confirm Password</label>
+              <input type="password" id="signup-confirm-password" class="form-input" placeholder="Repeat your password" required>
+            </div>
+            <button type="button" class="btn btn-primary" id="wizard-next-1" style="width: 100%;">
+              Next: Select Personality ➡️
+            </button>
+          </div>
+
+          <!-- STEP 2: Personality -->
+          <div class="signup-step-container hidden" id="signup-step-2">
+            <div class="form-group">
+              <label class="form-label">Choose Your Troll Avatar</label>
+              <div class="avatar-selection-grid" id="signup-avatar-grid">
+                <!-- Populated dynamically via JS -->
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="signup-personality">Chaos Personality Class</label>
+              <select id="signup-personality" class="form-input">
+                <option value="Agent of Entropy">Agent of Entropy (Default)</option>
+                <option value="Keyboard Smasher">Keyboard Smasher</option>
+                <option value="Meme Connoisseur">Meme Connoisseur</option>
+                <option value="Troll Architect">Troll Architect</option>
+                <option value="Pop-up Survivor">Pop-up Survivor</option>
+                <option value="Absolute Menace">Absolute Menace</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="signup-bio">Troll Manifesto (Bio)</label>
+              <textarea id="signup-bio" class="form-input" rows="2" placeholder="Briefly state your relationship with chaos..."></textarea>
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+              <button type="button" class="btn btn-secondary" id="wizard-prev-2" style="flex: 1;">⬅️ Back</button>
+              <button type="button" class="btn btn-primary" id="wizard-next-2" style="flex: 1;">Next: Preferences ➡️</button>
+            </div>
+          </div>
+
+          <!-- STEP 3: Preferences -->
+          <div class="signup-step-container hidden" id="signup-step-3">
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="signup-pref-sound">
+                <span>Enable Procedural Sound Synthesis (Default: Off)</span>
+              </label>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="signup-pref-intensity">Animation &amp; Screen FX Intensity</label>
+              <select id="signup-pref-intensity" class="form-input">
+                <option value="chill">Chill (Reduced visual tremor)</option>
+                <option value="unhinged" selected>Unhinged (Standard lab chaos)</option>
+                <option value="full-menace">Full Menace (Maximum explosions)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="signup-pref-theme">Visual Theme Palette</label>
+              <select id="signup-pref-theme" class="form-input">
+                <option value="dark" selected>Dark Cyberpunk (Default)</option>
+                <option value="light">Crisp Light Mode</option>
+              </select>
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+              <button type="button" class="btn btn-secondary" id="wizard-prev-3" style="flex: 1;">⬅️ Back</button>
+              <button type="button" class="btn btn-primary" id="wizard-next-3" style="flex: 1;">Review &amp; Confirm ➡️</button>
+            </div>
+          </div>
+
+          <!-- STEP 4: Confirmation -->
+          <div class="signup-step-container hidden" id="signup-step-4">
+            <div style="background: rgba(0,0,0,0.3); padding: 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; font-size: 0.9rem; line-height: 1.8;">
+              <div><strong>Name:</strong> <span id="summary-name" class="text-warning"></span></div>
+              <div><strong>Email:</strong> <span id="summary-email" class="text-warning"></span></div>
+              <div><strong>Avatar:</strong> <span id="summary-avatar" style="font-size: 1.3rem;"></span></div>
+              <div><strong>Personality:</strong> <span id="summary-personality" class="text-warning"></span></div>
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+              <button type="button" class="btn btn-secondary" id="wizard-prev-4" style="flex: 1;">⬅️ Back</button>
+              <button type="submit" class="btn btn-primary" id="signup-submit-btn" style="flex: 1;">
+                Complete Registration 🚀
+              </button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- TAB PANEL 3: PASSWORD RECOVERY -->
+      <div id="auth-recover-panel" class="hidden" role="tabpanel" aria-labelledby="tab-recover-btn">
+        <form id="recover-form" novalidate>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+            Enter the registered email associated with your laboratory clearance.
+          </p>
+          <div class="form-group">
+            <label class="form-label" for="recover-email">Email Address</label>
+            <input type="email" id="recover-email" class="form-input" placeholder="e.g. troll@ragebait.lab" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            Dispatched Simulated Reset Link ✉️
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- ============================================== -->
+    <!-- VIEW 2: PROFILE DASHBOARD (LOGGED-IN STATE)    -->
+    <!-- ============================================== -->
+    <div id="account-profile-view" class="profile-dashboard hidden">
+      
+      <!-- Profile Header Card -->
+      <div class="profile-header-card">
+        <div class="profile-identity">
+          <div class="profile-avatar-large" id="profile-avatar-display">😈</div>
+          <div class="profile-details">
+            <div class="profile-name-row">
+              <h1 class="profile-display-name" id="profile-name-display">Lord of Chaos</h1>
+              <span class="badge" id="profile-class-display" style="background: rgba(0,240,255,0.15); color: var(--accent-cyan); font-weight: 700; padding: 0.25rem 0.65rem; border-radius: var(--radius-full); font-size: 0.8rem;">Agent of Entropy</span>
+            </div>
+            <div class="profile-username" id="profile-username-display">@trollmaster_99</div>
+            <p class="profile-bio" id="profile-bio-display">Professional button avoider and chaos connoisseur.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 1rem;">
+          <div class="profile-completion-box">
+            <div class="profile-completion-label">
+              <span>Profile Integrity:</span>
+              <span id="profile-completion-text" class="text-warning">100% Completed</span>
+            </div>
+            <div class="volume-meter-track">
+              <div class="volume-meter-fill" id="profile-completion-bar" style="width: 100%;"></div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn btn-sm btn-secondary" id="open-edit-profile-btn">
+              ✏️ Edit Profile
+            </button>
+            <button class="btn btn-sm btn-danger" id="logout-btn">
+              Logout 🚪
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real Telemetry Statistics Grid -->
+      <div class="profile-stats-grid">
+        <div class="profile-stat-card">
+          <div class="profile-stat-icon">🔥</div>
+          <div class="profile-stat-value" id="stat-chaos-score">0</div>
+          <div class="profile-stat-label">Chaos Score</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="profile-stat-icon">⚡</div>
+          <div class="profile-stat-value" id="stat-interactions">0</div>
+          <div class="profile-stat-label">Total Clicks</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="profile-stat-icon">🧪</div>
+          <div class="profile-stat-value" id="stat-features">0 / 30</div>
+          <div class="profile-stat-label">Features Explored</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="profile-stat-icon">🏆</div>
+          <div class="profile-stat-value" id="stat-achievements">0 / 14</div>
+          <div class="profile-stat-label">Trophies Unlocked</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="profile-stat-icon">⏱️</div>
+          <div class="profile-stat-value" id="stat-reaction-time">Unranked</div>
+          <div class="profile-stat-label">Reflex Record</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="profile-stat-icon">🕵️</div>
+          <div class="profile-stat-value" id="stat-secrets">0 / 6</div>
+          <div class="profile-stat-label">Secrets Discovered</div>
+        </div>
+      </div>
+
+      <!-- Main Profile 2-Column Content -->
+      <div class="profile-main-grid">
+        
+        <!-- Left: Full Trophy Case -->
+        <div class="profile-section-card">
+          <h2 class="profile-card-title">
+            <span>🏆</span>
+            <span>Unlocked Trophies &amp; Milestones</span>
+          </h2>
+          <div id="profile-trophy-showcase"></div>
+        </div>
+
+        <!-- Right: Activities & Preferences -->
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+          
+          <!-- Activity Feed -->
+          <div class="profile-section-card">
+            <h2 class="profile-card-title">
+              <span>📜</span>
+              <span>Recent Activity Feed</span>
+            </h2>
+            <ul class="activity-feed-list" id="profile-activity-list"></ul>
+          </div>
+
+          <!-- Preferences Controller -->
+          <div class="profile-section-card">
+            <h2 class="profile-card-title">
+              <span>⚙️</span>
+              <span>Preferences &amp; Sensory Tuning</span>
+            </h2>
+            <div class="preferences-grid">
+              <div class="pref-row">
+                <div class="pref-label-wrap">
+                  <span class="pref-title">Sound Effects Synthesis</span>
+                  <span class="pref-sub">Procedural Web Audio meme sounds</span>
+                </div>
+                <input type="checkbox" id="pref-sound-toggle">
+              </div>
+
+              <div class="pref-row">
+                <div class="pref-label-wrap">
+                  <span class="pref-title">Master Audio Gain</span>
+                  <span class="pref-sub">Output synthesizer gain</span>
+                </div>
+                <input type="range" class="custom-range" id="pref-volume-slider" min="0" max="1" step="0.05" style="width: 120px;">
+              </div>
+
+              <div class="pref-row">
+                <div class="pref-label-wrap">
+                  <span class="pref-title">Chaos Intensity</span>
+                  <span class="pref-sub">Affects animations &amp; particle density</span>
+                </div>
+                <select id="pref-anim-intensity" class="text-input" style="width: 140px;">
+                  <option value="chill">Chill</option>
+                  <option value="unhinged">Unhinged</option>
+                  <option value="full-menace">Full Menace</option>
+                </select>
+              </div>
+
+              <div class="pref-row">
+                <div class="pref-label-wrap">
+                  <span class="pref-title">Color Palette</span>
+                  <span class="pref-sub">Theme selection</span>
+                </div>
+                <select id="pref-theme-select" class="text-input" style="width: 140px;">
+                  <option value="dark">Dark Cyberpunk</option>
+                  <option value="light">Crisp Light</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Shareable Profile Badge -->
+          <div class="profile-section-card">
+            <h2 class="profile-card-title">
+              <span>📣</span>
+              <span>Shareable Profile Card</span>
+            </h2>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Broadcast your chaos rating and verified trophy collection to friends.
+            </p>
+            <button class="btn btn-primary" id="copy-profile-summary-btn" style="width: 100%;">
+              Copy Profile Card Summary 📋
+            </button>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="profile-section-card" style="border-color: rgba(255,0,60,0.3);">
+            <h2 class="profile-card-title text-danger">
+              <span>⚠️</span>
+              <span>Laboratory Danger Zone</span>
+            </h2>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">
+              Wipe all recorded chaos points, trophies, and telemetry data. This action cannot be reversed.
+            </p>
+            <button class="btn btn-danger" id="reset-progress-btn" style="width: 100%;">
+              Purge All Progress &amp; Telemetry
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- MODAL: EDIT PROFILE -->
+  <div class="rbl-modal-backdrop" id="edit-profile-modal" role="dialog" aria-modal="true" aria-labelledby="edit-profile-title">
+    <div class="rbl-modal-card">
+      <div class="modal-header">
+        <h3 id="edit-profile-title">Edit Troll Identity</h3>
+        <button class="btn btn-sm btn-icon" id="close-edit-modal-btn" aria-label="Close dialog">&times;</button>
+      </div>
+      <form id="edit-profile-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="edit-display-name">Display Name</label>
+            <input type="text" id="edit-display-name" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-username">Username</label>
+            <input type="text" id="edit-username" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Avatar</label>
+            <div class="avatar-selection-grid" id="edit-avatar-grid"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-personality-class">Chaos Class</label>
+            <select id="edit-personality-class" class="form-input">
+              <option value="Agent of Entropy">Agent of Entropy</option>
+              <option value="Keyboard Smasher">Keyboard Smasher</option>
+              <option value="Meme Connoisseur">Meme Connoisseur</option>
+              <option value="Troll Architect">Troll Architect</option>
+              <option value="Pop-up Survivor">Pop-up Survivor</option>
+              <option value="Absolute Menace">Absolute Menace</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-bio">Bio</label>
+            <textarea id="edit-bio" class="form-input" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="reset-edit-btn">Reset</button>
+          <button type="button" class="btn btn-secondary" id="cancel-edit-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/achievements.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- Inline Auth Page Controller (for seamless single-page switching & wizard) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const authMascotAvatar = document.getElementById('auth-mascot-avatar');
+      const authMascotSpeech = document.getElementById('auth-mascot-speech');
+      const alertBox = document.getElementById('auth-alert-box');
+
+      const showAlert = (msg, isError = true) => {
+        alertBox.textContent = msg;
+        alertBox.className = `auth-alert-box ${isError ? 'is-error' : 'is-success'}`;
+        alertBox.classList.remove('hidden');
+      };
+
+      const hideAlert = () => {
+        alertBox.classList.add('hidden');
+      };
+
+      // TAB SWITCHING
+      const tabLogin = document.getElementById('tab-login-btn');
+      const tabSignup = document.getElementById('tab-signup-btn');
+      const tabRecover = document.getElementById('tab-recover-btn');
+      const panelLogin = document.getElementById('auth-login-panel');
+      const panelSignup = document.getElementById('auth-signup-panel');
+      const panelRecover = document.getElementById('auth-recover-panel');
+
+      const switchAuthTab = (activeTab) => {
+        hideAlert();
+        [tabLogin, tabSignup, tabRecover].forEach(t => {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        [panelLogin, panelSignup, panelRecover].forEach(p => p.classList.add('hidden'));
+
+        if (activeTab === 'login') {
+          tabLogin.classList.add('is-active');
+          tabLogin.setAttribute('aria-selected', 'true');
+          panelLogin.classList.remove('hidden');
+          authMascotAvatar.textContent = '😈';
+          authMascotSpeech.textContent = '"Back for more chaos? Prove your clearance!"';
+        } else if (activeTab === 'signup') {
+          tabSignup.classList.add('is-active');
+          tabSignup.setAttribute('aria-selected', 'true');
+          panelSignup.classList.remove('hidden');
+          authMascotAvatar.textContent = '🤡';
+          authMascotSpeech.textContent = '"A fresh recruit! Let us forge your menace credentials."';
+        } else if (activeTab === 'recover') {
+          tabRecover.classList.add('is-active');
+          tabRecover.setAttribute('aria-selected', 'true');
+          panelRecover.classList.remove('hidden');
+          authMascotAvatar.textContent = '🤔';
+          authMascotSpeech.textContent = '"Did you let the chaos wipe your memory?"';
+        }
+      };
+
+      tabLogin.onclick = () => switchAuthTab('login');
+      tabSignup.onclick = () => switchAuthTab('signup');
+      tabRecover.onclick = () => switchAuthTab('recover');
+
+      document.getElementById('forgot-password-link').onclick = (e) => {
+        e.preventDefault();
+        switchAuthTab('recover');
+      };
+
+      // QUICK FILL DEMO CREDENTIALS
+      const fillDemoBtn = document.getElementById('fill-demo-creds-btn');
+      if (fillDemoBtn) {
+        fillDemoBtn.onclick = () => {
+          switchAuthTab('login');
+          document.getElementById('login-email').value = 'troll@ragebait.lab';
+          document.getElementById('login-password').value = 'Password123!';
+          showAlert('Pre-filled demo credentials: troll@ragebait.lab / Password123!', false);
+          window.RBLAudio.playPop();
+        };
+      }
+
+      // MASCOT REACTS TO PASSWORD FOCUS
+      const loginPw = document.getElementById('login-password');
+      const loginPwToggle = document.getElementById('login-pw-toggle');
+
+      if (loginPw) {
+        loginPw.addEventListener('focus', () => {
+          authMascotAvatar.textContent = '🙈';
+          authMascotSpeech.textContent = '"I promise I am looking away... definitely not peeking."';
+        });
+        loginPw.addEventListener('blur', () => {
+          authMascotAvatar.textContent = '😈';
+          authMascotSpeech.textContent = '"Enter at your own risk!"';
+        });
+      }
+
+      if (loginPwToggle) {
+        loginPwToggle.onclick = () => {
+          const isPass = loginPw.type === 'password';
+          loginPw.type = isPass ? 'text' : 'password';
+          loginPwToggle.textContent = isPass ? '🔒' : '👁️';
+          authMascotAvatar.textContent = isPass ? '👀' : '🙈';
+          authMascotSpeech.textContent = isPass ? '"WHOA! Exposed plaintext! Shield your eyes!"' : '"Hidden safely in shadows."';
+          window.RBLAudio.playPop();
+        };
+      }
+
+      // LOGIN SUBMISSION
+      const loginForm = document.getElementById('login-form');
+      loginForm.onsubmit = async (e) => {
+        e.preventDefault();
+        hideAlert();
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-password').value;
+        const rem = document.getElementById('login-remember-me').checked;
+
+        const btnSpinner = document.getElementById('login-btn-spinner');
+        const btnText = document.getElementById('login-btn-text');
+        btnSpinner.classList.remove('hidden');
+        btnText.textContent = 'Authenticating...';
+
+        try {
+          await window.RBLAuth.login(email, pass, rem);
+          window.RBLAudio.playVictory();
+          window.RBLProfile.render();
+        } catch (err) {
+          window.RBLAudio.playBuzzer();
+          showAlert(err.message, true);
+        } finally {
+          btnSpinner.classList.add('hidden');
+          btnText.textContent = 'Log In To Laboratory';
+        }
+      };
+
+      // MULTI-STEP SIGNUP LOGIC
+      let signupStep = 1;
+      let selectedAvatar = '😈';
+
+      const renderSignupAvatars = () => {
+        const grid = document.getElementById('signup-avatar-grid');
+        grid.innerHTML = ['😈', '🤡', '🤖', '👾', '🔥', '💀', '🗿', '🐱‍👤', '👀', '🧙‍♂️'].map(av => `
+          <button type="button" class="avatar-option-btn ${av === selectedAvatar ? 'is-selected' : ''}" data-avatar="${av}">
+            ${av}
+          </button>
+        `).join('');
+
+        grid.querySelectorAll('.avatar-option-btn').forEach(btn => {
+          btn.onclick = () => {
+            selectedAvatar = btn.getAttribute('data-avatar');
+            renderSignupAvatars();
+          };
+        });
+      };
+      renderSignupAvatars();
+
+      // PASSWORD STRENGTH CHECKER
+      const signupPw = document.getElementById('signup-password');
+      const signupPwBar = document.getElementById('signup-pw-strength-bar');
+      const signupPwText = document.getElementById('signup-pw-strength-text');
+
+      signupPw.addEventListener('input', () => {
+        const val = signupPw.value;
+        const check = AuthUtils.validatePassword(val);
+        signupPwBar.style.width = `${check.score}%`;
+        signupPwBar.style.backgroundColor = check.score < 40 ? '#ff4d6d' : (check.score < 70 ? '#ffe600' : '#00ff66');
+        signupPwText.textContent = `Strength: ${check.label} (${check.score}%)`;
+      });
+
+      const goToStep = (step) => {
+        hideAlert();
+        for (let i = 1; i <= 4; i++) {
+          const container = document.getElementById(`signup-step-${i}`);
+          const node = document.getElementById(`node-step-${i}`);
+          if (i === step) {
+            container.classList.remove('hidden');
+            node.classList.add('is-active');
+          } else {
+            container.classList.add('hidden');
+            node.classList.remove('is-active');
+            if (i < step) node.classList.add('is-complete');
+            else node.classList.remove('is-complete');
+          }
+        }
+        signupStep = step;
+        window.RBLAudio.playPop();
+      };
+
+      document.getElementById('wizard-next-1').onclick = () => {
+        const name = document.getElementById('signup-name').value;
+        const email = document.getElementById('signup-email').value;
+        const pass = document.getElementById('signup-password').value;
+        const confirm = document.getElementById('signup-confirm-password').value;
+
+        if (!name || name.trim().length < 2) return showAlert('Display name must be at least 2 characters.');
+        if (!AuthUtils.validateEmail(email)) return showAlert('Enter a valid email address.');
+        if (!AuthUtils.validatePassword(pass).isValid) return showAlert('Password must be at least 8 characters and include at least one number.');
+        if (pass !== confirm) return showAlert('Passwords do not match.');
+
+        goToStep(2);
+      };
+
+      document.getElementById('wizard-prev-2').onclick = () => goToStep(1);
+      document.getElementById('wizard-next-2').onclick = () => goToStep(3);
+      document.getElementById('wizard-prev-3').onclick = () => goToStep(2);
+      document.getElementById('wizard-next-3').onclick = () => {
+        // Populate summary
+        document.getElementById('summary-name').textContent = document.getElementById('signup-name').value;
+        document.getElementById('summary-email').textContent = document.getElementById('signup-email').value;
+        document.getElementById('summary-avatar').textContent = selectedAvatar;
+        document.getElementById('summary-personality').textContent = document.getElementById('signup-personality').value;
+        goToStep(4);
+      };
+      document.getElementById('wizard-prev-4').onclick = () => goToStep(3);
+
+      // SIGNUP FINAL SUBMIT
+      const signupForm = document.getElementById('signup-multi-form');
+      signupForm.onsubmit = async (e) => {
+        e.preventDefault();
+        hideAlert();
+        const data = {
+          displayName: document.getElementById('signup-name').value,
+          email: document.getElementById('signup-email').value,
+          password: document.getElementById('signup-password').value,
+          avatar: selectedAvatar,
+          personality: document.getElementById('signup-personality').value,
+          bio: document.getElementById('signup-bio').value
+        };
+
+        const submitBtn = document.getElementById('signup-submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creating Account...';
+
+        try {
+          await window.RBLAuth.signup(data);
+          // Apply initial preferences
+          window.RBLStorage.savePreferences({
+            soundEnabled: document.getElementById('signup-pref-sound').checked,
+            animationIntensity: document.getElementById('signup-pref-intensity').value,
+            theme: document.getElementById('signup-pref-theme').value
+          });
+          window.RBLAudio.playVictory();
+          window.RBLProfile.render();
+        } catch (err) {
+          window.RBLAudio.playBuzzer();
+          showAlert(err.message, true);
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Complete Registration 🚀';
+        }
+      };
+
+      // PASSWORD RECOVERY
+      const recoverForm = document.getElementById('recover-form');
+      recoverForm.onsubmit = async (e) => {
+        e.preventDefault();
+        hideAlert();
+        const email = document.getElementById('recover-email').value;
+        try {
+          const res = await window.RBLAuth.recoverPassword(email);
+          showAlert(res.message, false);
+          window.RBLAudio.playVictory();
+        } catch (err) {
+          window.RBLAudio.playBuzzer();
+          showAlert(err.message, true);
+        }
+      };
+
+      // LOGOUT
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.onclick = () => {
+          window.RBLAuth.logout();
+          window.RBLAudio.playPop();
+          window.RBLProfile.render();
+        };
+      }
+
+      // RESET ALL PROGRESS
+      const resetBtn = document.getElementById('reset-progress-btn');
+      if (resetBtn) {
+        resetBtn.onclick = () => {
+          if (confirm('Are you sure you want to completely erase all laboratory statistics, trophies, and telemetry?')) {
+            window.RBLStorage.resetAllProgress();
+            window.RBLAudio.playVineBoom();
+            window.RBLProfile.render();
+            alert('All progress has been reset to zero!');
+          }
+        };
+      }
+
+      // COPY PROFILE CARD SUMMARY
+      const copyCardBtn = document.getElementById('copy-profile-summary-btn');
+      if (copyCardBtn) {
+        copyCardBtn.onclick = () => {
+          const user = window.RBLAuth.getCurrentUser();
+          const stats = window.RBLStorage.getStats();
+          const unlocked = window.RBLStorage.getUnlockedAchievements();
+          const text = `🪪 RAGEBAIT LAB - AGENT CREDENTIALS
+Agent: ${user.displayName} (@${user.username}) ${user.avatar}
+Class: ${user.personality}
+Chaos Score: ${stats.chaosScore}
+Trophies: ${unlocked.length} / 14
+Features Tested: ${stats.featuresUsed.length} / 30
+Status: ACTIVE DIGITAL MENACE`;
+
+          navigator.clipboard.writeText(text).then(() => {
+            copyCardBtn.textContent = 'Card Copied to Clipboard! 📋';
+            setTimeout(() => copyCardBtn.textContent = 'Copy Profile Card Summary 📋', 2000);
+          });
+        };
+      }
+
+      // INITIAL RENDER
+      window.RBLProfile.render();
+    });
+  </script>
+</body>
+</html>

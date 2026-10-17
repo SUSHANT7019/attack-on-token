@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-animation-intensity="unhinged">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RageBait Lab — A Chaotic, Interactive Web Playground</title>
+  <meta name="description" content="An experimental, unpredictable UI playground trolling visitors with escaping buttons, procedural audio, fake CAPTCHAs, and glorious digital mayhem.">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Theatrical Curtain for Dramatic Theme Switches -->
+  <div id="theatrical-curtain" aria-hidden="true"></div>
+
+  <!-- Global Confetti Canvas -->
+  <canvas id="global-confetti-canvas" aria-hidden="true"></canvas>
+
+  <!-- Chaos Panic Overlay (Feature 29) -->
+  <div id="chaos-panic-overlay" role="alertdialog" aria-modal="true" aria-labelledby="panic-title">
+    <div class="panic-content">
+      <div style="font-size: 5rem;">🚨</div>
+      <h2 id="panic-title" class="panic-title">CRITICAL CHAOS MELTDOWN</h2>
+      <p class="panic-subtitle">All safety parameters have been vaporized. Brace for absurdity!</p>
+      <button class="btn btn-secondary btn-lg" id="abort-chaos-btn">ABORT DETONATION 🛑</button>
+    </div>
+  </div>
+
+  <!-- Top Sticky Navigation Bar -->
+  <header class="navbar" role="banner">
+    <div class="nav-container">
+      <div class="nav-brand" id="brand-logo-trigger" title="Click me repeatedly if you dare...">
+        <span class="nav-brand-icon" aria-hidden="true">🌀</span>
+        <span class="nav-brand-text">RageBait Lab</span>
+      </div>
+
+      <!-- Live Session HUD -->
+      <nav class="nav-hud" aria-label="Session status indicators">
+        <div class="hud-item" title="Current Chaos Score">
+          <span class="hud-icon" aria-hidden="true">🔥</span>
+          <span class="hud-label">Chaos:</span>
+          <span class="hud-value hud-chaos-score">0</span>
+        </div>
+        <div class="hud-item" title="Features explored out of 30">
+          <span class="hud-icon" aria-hidden="true">🧪</span>
+          <span class="hud-label">Tested:</span>
+          <span class="hud-value hud-features-count">0 / 30</span>
+        </div>
+        <div class="hud-item" title="Achievements unlocked">
+          <span class="hud-icon" aria-hidden="true">🏆</span>
+          <span class="hud-label">Trophies:</span>
+          <span class="hud-value hud-achievements-count">0 / 14</span>
+        </div>
+      </nav>
+
+      <!-- Quick Navigation Actions -->
+      <div class="nav-actions">
+        <button class="btn btn-sm btn-secondary" id="global-stop-effects-btn" title="Stop any active screen tremor or cursed filters">
+          🛑 Stop Effects
+        </button>
+        <button class="btn btn-sm btn-secondary" id="nav-audio-toggle" aria-pressed="false" title="Toggle audio synthesis">
+          🔇 Sound: OFF
+        </button>
+        <button class="btn btn-sm btn-icon" id="nav-theme-toggle" aria-label="Toggle dark/light theme" title="Toggle theme">
+          🌓
+        </button>
+        <a href="account.html" class="btn btn-sm nav-account-btn" id="nav-account-link" title="Open user account and profile">
+          <span id="nav-user-avatar-badge" aria-hidden="true">👤</span>
+          <span id="nav-login-btn-text">Login / Profile</span>
+        </a>
+      </div>
+
+      <!-- Mobile Hamburger Button -->
+      <button class="nav-hamburger-btn" id="nav-hamburger-btn" aria-label="Toggle navigation menu" aria-expanded="false">
+        ☰
+      </button>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div class="nav-mobile-drawer" id="nav-mobile-drawer" role="navigation">
+      <div class="hud-item">
+        <span>🔥 Chaos Score:</span>
+        <span class="hud-value hud-chaos-score">0</span>
+      </div>
+      <div class="hud-item">
+        <span>🧪 Features Explored:</span>
+        <span class="hud-value hud-features-count">0 / 30</span>
+      </div>
+      <div class="hud-item">
+        <span>🏆 Trophies:</span>
+        <span class="hud-value hud-achievements-count">0 / 14</span>
+      </div>
+      <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+        <a href="account.html" class="btn btn-primary" style="flex: 1;">👤 Account / Profile</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <!-- HERO SECTION -->
+    <section class="hero-section" aria-labelledby="hero-title">
+      <div class="hero-content">
+        <div class="hero-pill">
+          <span>⚡</span>
+          <span>Experimental UI Disaster Zone</span>
+        </div>
+        <h1 id="hero-title" class="hero-title">
+          Where Good UX Goes <br>
+          <span class="gradient-text">To Graciously Die</span>
+        </h1>
+        <p class="hero-description">
+          A deliberately chaotic digital playground engineered to test your sanity through escaping controls, lying switches, meme audio synthesis, and absurd mini-challenges.
+        </p>
+
+        <div class="hero-cta-group">
+          <a href="#lab-features-section" class="btn btn-primary">
+            <span>🧪 Enter The Laboratory</span>
+          </a>
+          <button class="btn btn-secondary" id="manual-confetti-btn">
+            <span>🎉 Confetti Shower</span>
+          </button>
+          <a href="account.html" class="btn btn-secondary">
+            <span>🛡️ Login & Trophies</span>
+          </a>
+        </div>
+
+        <!-- Global Chaos Intensity Selector (Feature 20) -->
+        <div class="hero-chaos-selector" role="radiogroup" aria-labelledby="chaos-selector-title">
+          <div class="selector-header">
+            <span id="chaos-selector-title" class="selector-title">Laboratory Chaos Intensity:</span>
+            <span class="badge" style="font-size: 0.75rem; color: var(--accent-cyan);">Feature 20</span>
+          </div>
+          <div class="chaos-radio-group">
+            <label class="chaos-radio-label">
+              <input type="radio" name="chaos-intensity-radio" value="chill">
+              <span>😌 Chill</span>
+            </label>
+            <label class="chaos-radio-label">
+              <input type="radio" name="chaos-intensity-radio" value="unhinged" checked>
+              <span>🤪 Unhinged</span>
+            </label>
+            <label class="chaos-radio-label">
+              <input type="radio" name="chaos-intensity-radio" value="full-menace">
+              <span>😈 Full Menace</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Mascot Stage (Features 4 & 5) -->
+      <div class="hero-mascot-stage" id="cursor-detector-card">
+        <div class="mascot-avatar-card magnetic-target">
+          <div class="mascot-face-container">
+            <div class="mascot-eyes">
+              <div class="mascot-eye" aria-hidden="true">
+                <div class="mascot-pupil" id="mascot-pupil-left"></div>
+              </div>
+              <div class="mascot-eye" aria-hidden="true">
+                <div class="mascot-pupil" id="mascot-pupil-right"></div>
+              </div>
+            </div>
+            <div class="mascot-mouth" id="cursor-mascot-face" aria-label="Mascot face">😈</div>
+          </div>
+        </div>
+        <div class="mascot-speech-bubble" id="cursor-personality-status" role="status">
+          "Move your pointer! I'm watching your every twitch."
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION: THE 30 CHAOTIC FEATURES -->
+    <section class="section" id="lab-features-section" aria-labelledby="features-heading">
+      <div class="section-header">
+        <span class="section-tag">Interactive Experiments</span>
+        <h2 id="features-heading" class="section-title">The 30 Lab Traps & Mini-Games</h2>
+        <p class="section-subtitle">
+          Every button, slider, and toggle below does something real, unhinged, or deceptively hilarious. Can you discover all secrets?
+        </p>
+      </div>
+
+      <div class="features-grid">
+
+        <!-- FEATURE 1: Tilt-to-Control Volume -->
+        <article class="feature-card" id="card-feature-1">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Motion & Pointer</span>
+            <span class="feature-number">#01</span>
+          </div>
+          <h3 class="feature-title">Tilt-to-Control Volume</h3>
+          <p class="feature-desc">Tilt your phone or drag this slider to control the procedural audio synthesizer's master gain.</p>
+          <div class="feature-interactive-area volume-control-box">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700;">
+              <span>Master Gain:</span>
+              <span id="tilt-volume-value" class="text-warning">70%</span>
+            </div>
+            <div class="volume-meter-track">
+              <div class="volume-meter-fill" id="tilt-volume-meter"></div>
+            </div>
+            <input type="range" class="custom-range" id="tilt-volume-slider" min="0" max="100" value="70" aria-label="Volume Slider">
+            <button class="btn btn-sm btn-secondary" id="tilt-perm-btn">📱 Request Device Tilt Permission</button>
+          </div>
+        </article>
+
+        <!-- FEATURE 2: Coward Button -->
+        <article class="feature-card" id="card-feature-2">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Agility Trap</span>
+            <span class="feature-number">#02</span>
+          </div>
+          <h3 class="feature-title">The Coward Button</h3>
+          <p class="feature-desc">A button that sprints away whenever your pointer draws near. Try cornering it to claim glory!</p>
+          <div class="feature-interactive-area">
+            <div class="coward-arena" id="coward-arena">
+              <button class="btn btn-primary" id="coward-btn">Click Me If You Dare!</button>
+              <div class="coward-status-msg" id="coward-message" role="status">Go ahead, make a move.</div>
+            </div>
+          </div>
+        </article>
+
+        <!-- FEATURE 3: Magnetic Cursor -->
+        <article class="feature-card" id="card-feature-3">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Physics</span>
+            <span class="feature-number">#03</span>
+          </div>
+          <h3 class="feature-title">Magnetic Elements</h3>
+          <p class="feature-desc">Hover your cursor near these badges to watch them gravitationally distort and snap back.</p>
+          <div class="feature-interactive-area" style="display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center;">
+            <div class="gravity-item magnetic-target">🧲 Magnet 1</div>
+            <div class="gravity-item magnetic-target">🌀 Magnet 2</div>
+            <div class="gravity-item magnetic-target">⚡ Magnet 3</div>
+          </div>
+        </article>
+
+        <!-- FEATURE 4: Cursor Personality Detector -->
+        <article class="feature-card" id="card-feature-4">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Motion Tracker</span>
+            <span class="feature-number">#04</span>
+          </div>
+          <h3 class="feature-title">Cursor Velocity Profiler</h3>
+          <p class="feature-desc">Swirl your mouse violently in circles to give the hero mascot dizziness, or hold still to bore it.</p>
+          <div class="feature-interactive-area" style="text-align: center;">
+            <span class="badge" style="font-size: 0.9rem; padding: 0.5rem 1rem;">Active in Hero Stage ⬆️</span>
+          </div>
+        </article>
+
+        <!-- FEATURE 5: Idle Mascot -->
+        <article class="feature-card" id="idle-mascot-card">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">AI Mood</span>
+            <span class="feature-number">#05</span>
+          </div>
+          <h3 class="feature-title">The Idle Mascot</h3>
+          <p class="feature-desc">Do nothing for 12 seconds and observe how quickly the mascot falls into deep slumber.</p>
+          <div class="feature-interactive-area" style="text-align: center;">
+            <div id="idle-mascot-emoji" style="font-size: 3rem;">😈</div>
+            <div id="idle-snore-bubble" class="hidden text-warning" style="font-weight: 700; margin: 0.25rem 0;">💤 Zzz... Zzz... 💤</div>
+            <p id="idle-mascot-status" style="font-size: 0.85rem; margin-top: 0.5rem;">Plotting mischievous algorithms...</p>
+          </div>
+        </article>
+
+        <!-- FEATURE 6: Gravity Mode -->
+        <article class="feature-card" id="card-feature-6">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Physics</span>
+            <span class="feature-number">#06</span>
+          </div>
+          <h3 class="feature-title">Gravity Toggle</h3>
+          <p class="feature-desc">Disrupt the gravitational constant inside this playground box and watch tokens crash down.</p>
+          <div class="feature-interactive-area">
+            <div class="gravity-playground" id="gravity-playground">
+              <div class="gravity-items-row">
+                <span class="gravity-item">🪙 Token</span>
+                <span class="gravity-item">💎 Diamond</span>
+                <span class="gravity-item">💣 Bomb</span>
+                <span class="gravity-item">🍌 Banana</span>
+              </div>
+            </div>
+            <button class="btn btn-secondary" id="gravity-mode-toggle" style="width: 100%; margin-top: 0.75rem;">
+              Disrupt Gravity ☄️
+            </button>
+          </div>
+        </article>
+
+        <!-- FEATURE 7: Scroll Surprises -->
+        <article class="feature-card" id="scroll-surprise-trigger">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Surprise</span>
+            <span class="feature-number">#07</span>
+          </div>
+          <h3 class="feature-title">Scroll Surprises</h3>
+          <p class="feature-desc">Scrolling through the laboratory triggers contextual notifications without stealing your scroll control.</p>
+          <div class="feature-interactive-area" style="text-align: center;">
+            <p style="font-size: 0.85rem; color: var(--accent-green);">Trigger anchored at this card ⚓</p>
+          </div>
+        </article>
+
+        <!-- FEATURE 8: Glitch Text Generator -->
+        <article class="feature-card" id="card-feature-8">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Corrupter</span>
+            <span class="feature-number">#08</span>
+          </div>
+          <h3 class="feature-title">Glitch Text Generator</h3>
+          <p class="feature-desc">Transform normal sentences into heavily corrupted, unreadable Zalgo diacritical strings.</p>
+          <div class="feature-interactive-area glitch-control-box">
+            <input type="text" class="text-input" id="glitch-input" value="RageBait Lab is totally normal" aria-label="Text to corrupt">
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem;">
+              <span>Corruption Level:</span>
+              <input type="range" class="custom-range" id="glitch-intensity" min="1" max="10" value="4" style="width: 140px;" aria-label="Corruption Level">
+            </div>
+            <div class="glitch-display-box" id="glitch-output"></div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-sm btn-primary" id="glitch-copy-btn">Copy Corrupted Text</button>
+              <button class="btn btn-sm btn-secondary" id="glitch-purge-btn">Purge</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- FEATURE 9: Cursed Theme -->
+        <article class="feature-card" id="card-feature-9">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Aesthetic Horror</span>
+            <span class="feature-number">#09</span>
+          </div>
+          <h3 class="feature-title">Cursed Theme</h3>
+          <p class="feature-desc">Experience what happens when Comic Sans, 160° hue-rotation, and screen jitter collide.</p>
+          <div class="feature-interactive-area">
+            <button class="btn btn-danger" id="cursed-theme-btn" style="width: 100%;">Summon Cursed Theme 🤡</button>
+          </div>
+        </article>
+
+        <!-- FEATURE 10: Dramatic Theme Switch -->
+        <article class="feature-card" id="card-feature-10">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Theatrical</span>
+            <span class="feature-number">#10</span>
+          </div>
+          <h3 class="feature-title">Dramatic Theme Toggle</h3>
+          <p class="feature-desc">An unnecessarily dramatic blackout curtain effect when toggling between dark and light palettes.</p>
+          <div class="feature-interactive-area">
+            <button class="btn btn-secondary" id="dramatic-theme-toggle" style="width: 100%;">
+              🎬 Initiate Theatrical Flip
+            </button>
+          </div>
+        </article>
+
+        <!-- FEATURE 11: Lying Toggle -->
+        <article class="feature-card" id="card-feature-11">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Troll Switch</span>
+            <span class="feature-number">#11</span>
+          </div>
+          <h3 class="feature-title">The Lying Toggle</h3>
+          <p class="feature-desc">A switch explicitly labeled "DO NOT TURN ON". It turns itself off and questions your perception.</p>
+          <div class="feature-interactive-area toggle-wrapper">
+            <label class="lying-switch">
+              <input type="checkbox" id="lying-toggle-checkbox">
+              <span class="switch-slider"></span>
+            </label>
+            <div id="lying-toggle-msg" style="font-weight: 700; font-size: 0.9rem; color: var(--accent-pink);">
+              Toggle state: Inactive.
+            </div>
+          </div>
+        </article>
+
+        <!-- FEATURE 12: Infinite Loading Bar -->
+        <article class="feature-card" id="card-feature-12">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Fake Progress</span>
+            <span class="feature-number">#12</span>
+          </div>
+          <h3 class="feature-title">The Infinite Loading Bar</h3>
+          <p class="feature-desc">Reaches 99%, pauses for dramatic effect, then suddenly reverses progress due to existential errors.</p>
+          <div class="feature-interactive-area infinite-loading-box">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700;">
+              <span id="infinite-progress-text">Ready to download RAM</span>
+              <span id="infinite-progress-pct" class="text-warning">0%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="infinite-progress-fill"></div>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-sm btn-primary" id="start-loading-btn" style="flex: 1;">Download More RAM</button>
+              <button class="btn btn-sm btn-secondary hidden" id="skip-loading-btn">Skip Loading</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- FEATURE 13: Popup Boss Fight -->
+        <article class="feature-card" id="card-feature-13">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Boss Fight</span>
+            <span class="feature-number">#13</span>
+          </div>
+          <h3 class="feature-title">Popup Boss Fight</h3>
+          <p class="feature-desc">Survive 3 phases of relentless confirmation modals and defeat the recalcitrant OK button.</p>
+          <div class="feature-interactive-area">
+            <button class="btn btn-danger" id="start-popup-boss-btn" style="width: 100%;">
+              ⚔️ Challenge Popup Boss
+            </button>
+          </div>
+        </article>
+
+        <!-- FEATURE 14: Fake Terminal -->
+        <article class="feature-card" id="card-feature-14">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Cyber Hacker</span>
+            <span class="feature-number">#14</span>
+          </div>
+          <h3 class="feature-title">Retro CLI Terminal</h3>
+          <p class="feature-desc">Type commands like <code>help</code>, <code>matrix</code>, <code>nuke</code>, <code>roast</code>, or <code>secret</code>.</p>
+          <div class="feature-interactive-area terminal-window">
+            <div class="terminal-logs" id="fake-terminal-output" role="log">
+              <div class="terminal-line line-info">> RageBait Kernel v6.9.420 loaded.</div>
+              <div class="terminal-line line-success">> Type 'help' for command manual.</div>
+            </div>
+            <div class="terminal-input-row">
+              <input type="text" class="terminal-input" id="fake-terminal-input" placeholder="Enter command..." aria-label="Terminal input">
+              <button class="btn btn-sm btn-primary" id="fake-terminal-run">Run</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- FEATURE 15: Aura Meter -->
+        <article class="feature-card" id="card-feature-15">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Aura Diagnostic</span>
+            <span class="feature-number">#15</span>
+          </div>
+          <h3 class="feature-title">Real-Time Aura Meter</h3>
+          <p class="feature-desc">Calculated dynamically from your actual clicks, troll interactions, and chaos rating.</p>
+          <div class="feature-interactive-area">
+            <div class="aura-display-box">
+              <div class="aura-value" id="aura-score-val">0</div>
+              <div class="aura-rank" id="aura-rank-title">Calculating...</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="aura-check-btn" style="width: 100%; margin-top: 0.75rem;">
+              Perform Aura Check 🗿
+            </button>
+          </div>
+        </article>
+
+        <!-- FEATURE 16: Emoji Grenade -->
+        <article class="feature-card" id="card-feature-16">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Particle Burst</span>
+            <span class="feature-number">#16</span>
+          </div>
+          <h3 class="feature-title">Emoji Grenade</h3>
+          <p class="feature-desc">Pull the pin to detonate a physics-bounded blast of emojis with automatic cleanup.</p>
+          <div class="feature-interactive-area">
+            <button class="btn btn-danger" id="emoji-grenade-btn" style="width: 100%;">
+              Pull The Pin! 💣
+            </button>
+          </div>
+        </article>
+
+        <!-- FEATURE 17: Button Personality Generator -->
+        <article class="feature-card" id="card-feature-17">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Behavior Matrix</span>
+            <span class="feature-number">#17</span>
+          </div>
+          <h3 class="feature-title">Button Personality</h3>
+          <p class="feature-desc">Switch this button between Shy, Dramatic, Sleepy, Chaotic, and Overconfident modes.</p>
+          <div class="feature-interactive-area">
+            <select id="button-personality-select" class="text-input" style="margin-bottom: 0.75rem;" aria-label="Button personality selector">
+              <option value="shy">Mode: Shy & Trembling</option>
+              <option value="dramatic">Mode: Overly Dramatic</option>
+              <option value="sleepy">Mode: Exhausted & Sleepy</option>
+              <option value="chaotic">Mode: Pure Chaos</option>
+              <option value="overconfident">Mode: Invincible Ego</option>
+            </select>
+            <button class="btn btn-primary" id="personality-target-btn" style="width: 100%;">
+              p-please dont click me...
+            </button>
+            <p id="personality-speech-bubble" style="font-size: 0.85rem; color: var(--accent-yellow); text-align: center; margin-top: 0.5rem;">
+              Choose my attitude and click!
+            </p>
+          </div>
+        </article>
+
+        <!-- FEATURE 18: Roast Generator -->
+        <article class="feature-card" id="card-feature-18">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Comedy</span>
+            <span class="feature-number">#18</span>
+          </div>
+          <h3 class="feature-title">Harmless Roast Generator</h3>
+          <p class="feature-desc">Generate tailored, tech and gamer-flavored roasts with one-click clipboard copying.</p>
+          <div class="feature-interactive-area">
+            <div id="roast-display-text" style="font-style: italic; min-height: 48px; font-size: 0.9rem; color: #fff; margin-bottom: 0.75rem;">
+              "Your code looks like it was written during a hurricane on 2% battery."
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-sm btn-primary" id="generate-roast-btn" style="flex: 1;">Reroll Roast 🔥</button>
+              <button class="btn btn-sm btn-secondary" id="copy-roast-btn">Copy</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- FEATURE 19: Fake CAPTCHA -->
+        <article class="feature-card" id="card-feature-19">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Verification</span>
+            <span class="feature-number">#19</span>
+          </div>
+          <h3 class="feature-title">Fictional CAPTCHA</h3>
+          <p class="feature-desc">Select the emoji that matches your current existential crisis to verify your humanity.</p>
+          <div class="feature-interactive-area">
+            <div style="display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 0.75rem;">
+              <button class="btn btn-icon captcha-option-btn" data-emoji="🤡" title="Clown">🤡</button>
+              <button class="btn btn-icon captcha-option-btn" data-emoji="🫠" title="Melting">🫠</button>
+              <button class="btn btn-icon captcha-option-btn" data-emoji="🫥" title="Invisible">🫥</button>
+              <button class="btn btn-icon captcha-option-btn" data-emoji="🛌" title="Bed">🛌</button>
+              <button class="btn btn-icon captcha-option-btn" data-emoji="🦖" title="Dino">🦖</button>
+            </div>
+            <div id="captcha-result-msg" style="font-size: 0.85rem; text-align: center;">Click an emoji above to verify.</div>
+          </div>
+        </article>
+
+        <!-- FEATURE 20: Chaos Intensity (Already in Hero & synced) -->
+        <article class="feature-card" id="card-feature-20">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Global Setting</span>
+            <span class="feature-number">#20</span>
+          </div>
+          <h3 class="feature-title">Chaos Intensity Hub</h3>
+          <p class="feature-desc">Adjust the global madness level. Setting to "Full Menace" unlocks an achievement!</p>
+          <div class="feature-interactive-area" style="text-align: center;">
+            <p style="font-size: 0.85rem;">Currently active: Check the selector in the Hero section or your Profile preferences.</p>
+          </div>
+        </article>
+
+        <!-- FEATURE 21: Meme Soundboard -->
+        <article class="feature-card" id="card-feature-21">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Audio Synthesizer</span>
+            <span class="feature-number">#21</span>
+          </div>
+          <h3 class="feature-title">Meme Soundboard</h3>
+          <p class="feature-desc">6 synthesized Web Audio procedural sound effects. Unmute audio to hear them roar!</p>
+          <div class="feature-interactive-area">
+            <div class="soundboard-grid">
+              <button class="soundboard-pad" data-sound="vine_boom">
+                <span class="sound-pad-icon">💥</span>
+                <span>Vine Boom</span>
+              </button>
+              <button class="soundboard-pad" data-sound="airhorn">
+                <span class="sound-pad-icon">🎺</span>
+                <span>Airhorn</span>
+              </button>
+              <button class="soundboard-pad" data-sound="sad_trombone">
+                <span class="sound-pad-icon">🎻</span>
+                <span>Trombone</span>
+              </button>
+              <button class="soundboard-pad" data-sound="quack">
+                <span class="sound-pad-icon">🦆</span>
+                <span>Quack</span>
+              </button>
+              <button class="soundboard-pad" data-sound="laser">
+                <span class="sound-pad-icon">🔫</span>
+                <span>Laser</span>
+              </button>
+              <button class="soundboard-pad" data-sound="buzzer">
+                <span class="sound-pad-icon">🚨</span>
+                <span>Buzzer</span>
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- FEATURE 22: Reaction-Time Game -->
+        <article class="feature-card" id="card-feature-22">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Reflex Trial</span>
+            <span class="feature-number">#22</span>
+          </div>
+          <h3 class="feature-title">Reaction-Time Trial</h3>
+          <p class="feature-desc">Wait for the box to turn green, then click as fast as humanly possible.</p>
+          <div class="feature-interactive-area">
+            <div class="reaction-arena state-idle" id="reaction-box">
+              <div id="reaction-instruction" style="font-weight: 700;">Click to Start Trial</div>
+              <div id="reaction-result-display" style="font-size: 0.85rem;"></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- FEATURE 23: Lucky Wheel -->
+        <article class="feature-card" id="card-feature-23">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Random Chance</span>
+            <span class="feature-number">#23</span>
+          </div>
+          <h3 class="feature-title">The Unlucky Wheel</h3>
+          <p class="feature-desc">Canvas-driven physics spinning wheel with 8 absurd potential outcomes.</p>
+          <div class="feature-interactive-area wheel-container">
+            <div class="wheel-canvas-wrap">
+              <div class="wheel-pointer" aria-hidden="true"></div>
+              <canvas id="wheel-canvas" width="220" height="220"></canvas>
+            </div>
+            <button class="btn btn-sm btn-primary" id="spin-wheel-btn">Spin The Wheel! 🎡</button>
+            <div id="wheel-outcome-text" style="font-size: 0.85rem; font-weight: 700; color: var(--accent-yellow);">Ready to spin.</div>
+          </div>
+        </article>
+
+        <!-- FEATURE 24: Confetti Celebration -->
+        <article class="feature-card" id="card-feature-24">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Visual Joy</span>
+            <span class="feature-number">#24</span>
+          </div>
+          <h3 class="feature-title">Confetti Cannon</h3>
+          <p class="feature-desc">Trigger a burst of 50 animated confetti particles with gravity and air resistance.</p>
+          <div class="feature-interactive-area">
+            <button class="btn btn-secondary" onclick="window.RBLFeatures.fireConfetti(60)" style="width: 100%;">
+              Blast Confetti! 🎉
+            </button>
+          </div>
+        </article>
+
+        <!-- FEATURE 25: Sound Reaction Mode -->
+        <article class="feature-card" id="card-feature-25">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Audio Equalizer</span>
+            <span class="feature-number">#25</span>
+          </div>
+          <h3 class="feature-title">Sound Visualizer</h3>
+          <p class="feature-desc">Equalizer bars that pulse and dance in real-time whenever sound effects fire.</p>
+          <div class="feature-interactive-area">
+            <div class="sound-eq-container" aria-hidden="true">
+              <div class="sound-eq-bar"></div>
+              <div class="sound-eq-bar"></div>
+              <div class="sound-eq-bar"></div>
+              <div class="sound-eq-bar"></div>
+              <div class="sound-eq-bar"></div>
+              <div class="sound-eq-bar"></div>
+              <div class="sound-eq-bar"></div>
+              <div class="sound-eq-bar"></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- FEATURE 26: Keyboard Cheat Codes -->
+        <article class="feature-card" id="card-feature-26">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Easter Egg</span>
+            <span class="feature-number">#26</span>
+          </div>
+          <h3 class="feature-title">Keyboard Cheat Codes</h3>
+          <p class="feature-desc">Secret keyboard combinations activate hidden Easter eggs across the laboratory.</p>
+          <div class="feature-interactive-area" style="font-size: 0.85rem; line-height: 1.6;">
+            <div>💡 <strong>Code 1:</strong> Konami Code (<code>↑ ↑ ↓ ↓ ← → ← → B A</code>)</div>
+            <div>💡 <strong>Code 2:</strong> Type the letters <code>R A G E</code> on your keyboard!</div>
+          </div>
+        </article>
+
+        <!-- FEATURE 27: Mini Chaos Challenge -->
+        <article class="feature-card" id="card-feature-27">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Timed Game</span>
+            <span class="feature-number">#27</span>
+          </div>
+          <h3 class="feature-title">15-Second Chaos Frenzy</h3>
+          <p class="feature-desc">Click as many fleeing targets as you can before the clock reaches zero.</p>
+          <div class="feature-interactive-area">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem;">
+              <span>Score: <span id="challenge-score" class="text-warning">0</span></span>
+              <span>Time: <span id="challenge-timer" class="text-danger">15s</span></span>
+            </div>
+            <div class="challenge-arena" id="challenge-arena"></div>
+            <button class="btn btn-sm btn-primary" id="start-challenge-btn" style="width: 100%; margin-top: 0.5rem;">
+              Start 15s Challenge ⚡
+            </button>
+          </div>
+        </article>
+
+        <!-- FEATURE 28: Secret Discovery System -->
+        <article class="feature-card" id="card-feature-28">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Exploration</span>
+            <span class="feature-number">#28</span>
+          </div>
+          <h3 class="feature-title">Secret Discovery System</h3>
+          <p class="feature-desc">Tracks 6 secrets hidden across this page (logo clicking, footer troll, cheat codes, etc.).</p>
+          <div class="feature-interactive-area" style="text-align: center;">
+            <div id="secrets-found-counter" style="font-size: 1.4rem; font-family: var(--font-mono); font-weight: 800; color: var(--accent-cyan);">
+              0 / 6 Discovered
+            </div>
+            <p style="font-size: 0.8rem; margin-top: 0.25rem;">Hint: Try clicking the top-left logo 5 times!</p>
+          </div>
+        </article>
+
+        <!-- FEATURE 29: Final Chaos Button -->
+        <article class="feature-card" id="card-feature-29">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Doomsday Trap</span>
+            <span class="feature-number">#29</span>
+          </div>
+          <h3 class="feature-title">The Nuclear Panic Button</h3>
+          <p class="feature-desc">Combines screen shake, emergency sirens, and particle madness in a controlled 4s burst.</p>
+          <div class="feature-interactive-area hazard-box">
+            <button class="btn btn-danger btn-lg" id="nuke-chaos-btn" style="font-size: 1.1rem; padding: 0.85rem 1.5rem;">
+              ⚠️ DO NOT PRESS ⚠️
+            </button>
+          </div>
+        </article>
+
+        <!-- FEATURE 30: Final Report Generator -->
+        <article class="feature-card" id="card-feature-30">
+          <div class="feature-card-glow"></div>
+          <div class="card-top">
+            <span class="feature-badge">Certification</span>
+            <span class="feature-number">#30</span>
+          </div>
+          <h3 class="feature-title">Chaos Diagnostic Certificate</h3>
+          <p class="feature-desc">Generate your official certified evaluation report based on your actual session metrics.</p>
+          <div class="feature-interactive-area">
+            <button class="btn btn-primary" id="generate-report-btn" style="width: 100%;">
+              📜 Generate Diagnostic Report
+            </button>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- SECTION: ACHIEVEMENTS & TROPHY SHOWCASE -->
+    <section class="section" id="trophies-section" aria-labelledby="trophies-heading">
+      <div class="section-header">
+        <span class="section-tag">Proof of Madness</span>
+        <h2 id="trophies-heading" class="section-title">Laboratory Achievements</h2>
+        <p class="section-subtitle">
+          Unlock all 14 official trophies by testing your limits across the experiments.
+        </p>
+      </div>
+      <div id="home-trophy-showcase"></div>
+    </section>
+
+    <!-- Scroll Surprise Floating Banner (Feature 7) -->
+    <div class="scroll-surprise-banner" id="scroll-surprise-banner" role="status">
+      <span style="font-size: 2rem;">👀</span>
+      <div>
+        <h4 style="font-size: 0.95rem; margin-bottom: 0.15rem;">Still scrolling?</h4>
+        <p style="font-size: 0.8rem; margin: 0;">There is no escape from the laboratory of chaos.</p>
+      </div>
+      <button class="btn btn-sm btn-secondary surprise-close-btn">&times;</button>
+    </div>
+  </main>
+
+  <!-- MODAL: POPUP BOSS FIGHT (Feature 13) -->
+  <div class="rbl-modal-backdrop" id="popup-boss-modal" role="dialog" aria-modal="true" aria-labelledby="popup-boss-phase">
+    <div class="rbl-modal-card">
+      <div class="modal-header">
+        <h3 id="popup-boss-phase" style="font-size: 1.2rem;">Popup Boss Fight</h3>
+      </div>
+      <div class="modal-body" id="popup-boss-body"></div>
+      <div class="modal-footer" id="popup-boss-actions"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: FINAL REPORT (Feature 30) -->
+  <div class="rbl-modal-backdrop" id="final-report-modal" role="dialog" aria-modal="true" aria-labelledby="report-modal-title">
+    <div class="rbl-modal-card">
+      <div class="modal-header">
+        <h3 id="report-modal-title">Official Chaos Evaluation Report</h3>
+        <button class="btn btn-sm btn-icon" id="close-report-modal-btn" aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="modal-body" style="line-height: 1.8;">
+        <div style="text-align: center; margin-bottom: 1.5rem;">
+          <span style="font-size: 3.5rem;">📜</span>
+          <h4 style="font-size: 1.4rem;">CERTIFIED AGENT OF CHAOS</h4>
+          <p style="font-size: 0.9rem; color: var(--accent-cyan);">Issued by RageBait Laboratory Bureau of Trolling</p>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; background: rgba(0,0,0,0.3); padding: 1.25rem; border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.9rem;">
+          <div>Chaos Score: <strong id="report-stat-chaos" class="text-warning">0</strong></div>
+          <div>Interactions: <strong id="report-stat-interactions" class="text-warning">0</strong></div>
+          <div>Trophies: <strong id="report-stat-achievements" class="text-warning">0</strong></div>
+          <div>Features Tested: <strong id="report-stat-features" class="text-warning">0</strong></div>
+          <div>Best Reflex: <strong id="report-stat-reaction" class="text-warning">0 ms</strong></div>
+          <div>Diagnosis: <strong class="text-danger">Terminal Troll</strong></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="copy-report-btn">Copy Report Summary 📋</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <div class="nav-brand">
+          <span class="nav-brand-icon" aria-hidden="true">🌀</span>
+          <span class="nav-brand-text">RageBait Lab</span>
+        </div>
+        <p class="footer-desc">
+          An open, harmless interactive web experiment built strictly with HTML5, CSS3, and modern Vanilla JavaScript.
+        </p>
+      </div>
+      <div class="footer-links-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="#lab-features-section">Laboratory Experiments</a></li>
+          <li><a href="#trophies-section">Achievements Showcase</a></li>
+          <li><a href="account.html">Account & Profile</a></li>
+        </ul>
+      </div>
+      <div class="footer-links-col">
+        <h4>Lab Safety</h4>
+        <ul>
+          <li>Muted by default</li>
+          <li>No tracking scripts</li>
+          <li>No pop-up hijacking</li>
+          <li>Reduced-motion friendly</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 RageBait Lab. All rights playfully challenged.</span>
+      <span class="hidden-troll-link" id="hidden-footer-troll" title="Psst... click me for a secret!">👾</span>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/achievements.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/features.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
