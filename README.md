@@ -1,5 +1,5 @@
-Prompt:
-# PROJECT: RAGEBAIT LAB — A CHAOTIC, INTERACTIVE WEB EXPERIENCE
+#Prompt:
+## PROJECT: RAGEBAIT LAB — A CHAOTIC, INTERACTIVE WEB EXPERIENCE
 
 ## ROLE
 
@@ -494,8 +494,8 @@ Start by inspecting the project and then implement the complete working website 
 
 
 
-
-Response :::
+<hr><hr>
+# Response :::
 
 
 
@@ -572,11 +572,11 @@ Browser task: "Test RageBait Lab Web Experience"
 
 
 
+<hr><hr>
+#Prompt : what are the default login data?
 
-Prompt : what are the default login data?
 
-
-
+<hr><hr>
 Response: 
 The default demo login credentials configured in the laboratory are:
 
